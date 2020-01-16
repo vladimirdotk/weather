@@ -6,7 +6,7 @@ services:
     image: postgres:12.1
     restart: always
     ports:
-        - "5151:5432"
+        - "${PG_PORT}:${PG_PORT}"
     volumes:
         - "./docker/db/init:/docker-entrypoint-initdb.d"
     environment:
