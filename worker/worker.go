@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"sync"
 	"time"
 
@@ -20,9 +21,19 @@ const (
 // Run worker logic periodically
 func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
+
+	sigint := make(chan os.Signal, 1)
+	signal.Notify(sigint, os.Interrupt)
+
 	for {
-		process()
-		time.Sleep(time.Minute)
+		select {
+		case <-sigint:
+			log.Print("Worker received SIGINT, will shutdown gracefully")
+			return
+		default:
+			process()
+			time.Sleep(time.Second * 2)
+		}
 	}
 }
 
